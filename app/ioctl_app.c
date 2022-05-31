@@ -117,21 +117,7 @@ void testgetpid_byioctl()
 
 int main(void) {
 
-  measure_time *start_time;
-  /*int fd_ioctl = open_driver(IOCTL_DRIVER_NAME);
-  char value[128];
-  
-  //get process ID by kernel module
-  memset(value,0,128);
-  strcpy(value,"systemd-udevd");
-	if (ioctl(fd_ioctl, IOCTL_BASE_GET_PSID, value) < 0) {
-			perror("Error ioctl PL_AXI_DMA_GET_NUM_DEVICES");
-			exit(EXIT_FAILURE);
-	}
-	else printf("process id:%s\n",value);
-
-	close_driver(IOCTL_DRIVER_NAME, fd_ioctl);*/
-
+	measure_time *start_time;
  	//get process id by pidof
 	start_time=start_measure();
 	testgetpid_bypidof();

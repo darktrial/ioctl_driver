@@ -12,6 +12,8 @@
 #include <asm/uaccess.h>
 #include <linux/delay.h>
 #include <linux/cdev.h>	
+#include <linux/uaccess.h>
+#include <linux/sched/signal.h>
 
 #include "ioctl_dev.h"
 #include "ioctl.h"
@@ -136,14 +138,21 @@ int ioctl_d_interface_release(struct inode *inode, struct file *filp)
 
 long ioctl_d_interface_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
+	char psName[128];
+	struct task_struct *task;
+	
 	switch (cmd) {
-		// Get the number of channel found
-		case IOCTL_BASE_GET_MUIR:
-			printk(KERN_INFO "<%s> ioctl: IOCTL_BASE_GET_MUIR\n", DEVICE_NAME);
-			uint32_t value = 0x12345678;
-			if (copy_to_user((uint32_t*) arg, &value, sizeof(value))){
-				return -EFAULT;
-			}
+		case IOCTL_BASE_GET_PSID:
+			printk(KERN_INFO "<%s> ioctl: IOCTL_BASE_GET_PSID\n", DEVICE_NAME);
+			memset(psName,0,128);
+			copy_from_user(psName, (char __user *)arg, 128);
+			printk(KERN_INFO "psname:%s\n",psName);
+ 			for_each_process(task) {
+				if (strcmp(psName, task->comm)==0){
+					snprintf(psName,128,"%d",task->pid);	
+					copy_to_user((char __user *)arg,psName,128);
+  				}
+  			}
 			break;
 
 		default:
